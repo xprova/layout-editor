@@ -1,4 +1,4 @@
-﻿namespace LayoutEditor
+namespace LayoutEditor
 {
     partial class Form1
     {
