@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace LayoutEditor
 
         private Pen grid_major_pen = new Pen(Color.FromArgb(255, 220, 220, 220), 1);
 
-        private Pen grid_minor_pen = new Pen(Color.FromArgb(255 ,230, 230, 230), 1);
+        private Pen grid_minor_pen = new Pen(Color.FromArgb(255, 230, 230, 230), 1);
 
         private Color bg = Color.FromArgb(240, 240, 240);
 
@@ -40,15 +41,14 @@ namespace LayoutEditor
 
         private long[] old_ticks = new long[10];
 
-        Graphics g;
+        private int texID1;
+        private int texID2;
 
         Region r = new Region();
 
         public Form1() {
 
             InitializeComponent();
-
-            g = pictureBox1.CreateGraphics();
 
             for (int i = 0; i < 10; i++) {
                 old_ticks[i] = 0;
@@ -59,12 +59,12 @@ namespace LayoutEditor
             this.CenterToScreen();
 
             this.Refresh();
-
         }
 
         private void Form1_Load(object sender, EventArgs e) {
-            this.Show();
+
             simpleOpenGlControl1.InitializeContexts();
+
             while (false) {
                 shift.X += 1.5f;
                 shift.Y += 1.5f;
@@ -73,28 +73,12 @@ namespace LayoutEditor
                 //updateFPS();
                 simpleOpenGlControl1.Refresh();
             }
-            pictureBox1.Hide();
-            simpleOpenGlControl1.Show();
+
+            texID1 = OpenGL.makeTexture(new Bitmap(@"d:\test2.jpg"));
+
+            simpleOpenGlControl1_Resize(null, null); // trigger initialization
+
         }
-
-
-        // private void test_texture() {
-        //     Bitmap image = new Bitmap("d:\test.jpg");
-        //     image.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-        //     Rectangle rect = new Rectangle(0, 0, image.Width, image.Height);
-        //     var bitmapdata = image.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadOnly,
-        //                     System.Drawing.Imaging.PixelFormat.Format24bppRgb);
-
-        //     // storage for texture for one picture
-
-        //     Gl.glBindTexture(Gl.GL_TEXTURE_2D, texture[3]);
-        //     Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, (int)Gl.GL_RGB8, image.Width, image.Height,
-        //         0, Gl.GL_BGR_EXT, Gl.GL_UNSIGNED_BYTE, bitmapdata.Scan0);
-        //     Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR);       // Linear Filtering
-        //     Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
-        // }
-
 
         private void drawObjects_GL(PointF shift) {
 
@@ -157,16 +141,21 @@ namespace LayoutEditor
 
         private void simpleOpenGlControl1_Paint(object sender, PaintEventArgs e) {
 
-            int w = simpleOpenGlControl1.Width;
-            int h = simpleOpenGlControl1.Height;
-
-            OpenGL.init(w, h);
             OpenGL.clear(bg);
 
             drawGrid_GL(25, grid_minor_pen, shift);
+
             drawGrid_GL(100, grid_major_pen, shift);
 
             drawObjects_GL(shift);
+
+            OpenGL.drawTestTriangle(500, 500, 600, 500, 600, 600);
+
+            OpenGL.drawTexture(texID1, 150, 150, 256, 256, 1f);
+
+            OpenGL.drawTexture(texID1, 800, 200, 256, 256, 1f);
+
+            this.Text = "" + texID1 + "," + texID2;
 
             OpenGL.flush();
 
@@ -174,7 +163,7 @@ namespace LayoutEditor
 
         private void simpleOpenGlControl1_MouseMove(object sender, MouseEventArgs e) {
 
-             if (e.Button == MouseButtons.Middle) {
+            if (e.Button == MouseButtons.Middle) {
 
                 if (is_dragging) {
 
@@ -207,6 +196,15 @@ namespace LayoutEditor
                 }
             }
 
+        }
+
+        private void simpleOpenGlControl1_Resize(object sender, EventArgs e) {
+
+            int w = simpleOpenGlControl1.Width;
+
+            int h = simpleOpenGlControl1.Height;
+
+            OpenGL.init(w, h);
         }
     }
 }
