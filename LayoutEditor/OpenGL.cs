@@ -17,31 +17,6 @@ namespace LayoutEditor
             Gl.glColor3f(c.R / 255f, c.G / 255f, c.B / 255f);
         }
 
-        public static void activeTexture(int index) {
-
-            Gl.glActiveTexture(Gl.GL_TEXTURE0 + index);
-        }
-
-        public static int makeTextureB(Bitmap bmp) {
-
-            int index;
-
-            Gl.glGenTextures(1, out index);                                   // Create Five Textures
-
-            Rectangle rectangle = new Rectangle(0, 0, bmp.Width, bmp.Height);
-            BitmapData bitmapData = bmp.LockBits(rectangle, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-
-            // Create Linear Filtered Texture
-            Gl.glBindTexture(Gl.GL_TEXTURE_2D, index);
-            Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
-            Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR);
-            // Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, Gl.GL_RGB8, bmp.Width, bmp.Height, 0, Gl.GL_BGR, Gl.GL_UNSIGNED_BYTE, bitmapData.Scan0);
-            Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, (int)Gl.GL_RGBA, bmp.Width, bmp.Height, 0, Gl.GL_BGRA, Gl.GL_UNSIGNED_BYTE, bitmapData.Scan0);
-
-            return index;
-
-        }
-
         public static int[] makeGroupTextures(Bitmap[] bmps) {
 
             int n = bmps.Length;
@@ -67,29 +42,6 @@ namespace LayoutEditor
             }
 
             return indices;
-
-        }
-
-        public static int makeTexture(Bitmap bmp) {
-            Rectangle rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
-
-            // using (Graphics g = Graphics.FromImage(bmp)) {
-            //     g.Clip = new Region(new Rectangle(0, 0, 100, 100));
-            //     g.Clear(Color.FromArgb(100, Color.Red));
-            // }
-
-            var bmpData = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-
-            int index;
-
-            Gl.glGenTextures(1, out index); //where 1 is the count, and index a new texture slot in the gpu
-
-            Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, (int)Gl.GL_RGBA, bmp.Width, bmp.Height, 0, Gl.GL_BGRA, Gl.GL_UNSIGNED_BYTE, bmpData.Scan0);
-
-            Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR);
-            Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
-
-            return index-1;
 
         }
 
@@ -173,37 +125,6 @@ namespace LayoutEditor
             Gl.glFlush();
         }
 
-
-        // public static int uploadTexture(Bitmap bitmap) {
-
-        //     txt_counter += 1;
-
-        //     int txt_id = txt_counter;
-
-        //     Gl.glBindTexture(Gl.GL_TEXTURE_2D, txt_id);
-
-        //     Gl.glPixelStorei(Gl.GL_UNPACK_ALIGNMENT, 1);
-
-        //     Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_S, Gl.GL_REPEAT);
-        //     Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_WRAP_T, Gl.GL_REPEAT);
-        //     Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
-        //     Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR);
-
-        //     Gl.glTexEnvf(Gl.GL_TEXTURE_ENV, Gl.GL_TEXTURE_ENV_MODE, Gl.GL_MODULATE);
-
-        //     //Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, Gl.GL_RGB, bitmap.Width, bitmap.Height, 0, Gl.GL_RGB, Gl.GL_UNSIGNED_BYTE, imageData);
-
-
-        //     Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        //     BitmapData bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
-
-        //     Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, 4, bitmap.Width, bitmap.Height, 0, Gl.GL_RGBA, Gl.GL_UNSIGNED_BYTE, bitmapData.Scan0);
-
-        //     bitmap.UnlockBits(bitmapData);
-
-        //     bitmap.Dispose();
-
-        //     return txt_id;
-        // }
     }
+
 }
