@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Tao.FreeGlut;
 using Tao.OpenGl;
-using Tao.Platform.Windows;
 
 namespace LayoutEditor
 {
@@ -41,10 +34,7 @@ namespace LayoutEditor
 
         private long[] old_ticks = new long[10];
 
-        private int texID1;
-        private int texID2;
-
-        Region r = new Region();
+        private int[] textures;
 
         public Form1() {
 
@@ -61,22 +51,39 @@ namespace LayoutEditor
             this.Refresh();
         }
 
+        private Bitmap createLabel() {
+            Bitmap bmp = new Bitmap(256, 256);
+
+            RectangleF rectf = new RectangleF(0, 0, 256, 256);
+
+            Graphics g = Graphics.FromImage(bmp);
+
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+            g.DrawString("Component 1", new Font("Consolas",20), Brushes.Black, rectf);
+
+            g.Flush();
+            return bmp;
+        }
+
         private void Form1_Load(object sender, EventArgs e) {
 
             simpleOpenGlControl1.InitializeContexts();
 
-            while (false) {
-                shift.X += 1.5f;
-                shift.Y += 1.5f;
-                //  pictureBox1.Invalidate();
-                System.Threading.Thread.Sleep(15);
-                //updateFPS();
-                simpleOpenGlControl1.Refresh();
-            }
-
-            texID1 = OpenGL.makeTexture(new Bitmap(@"d:\test2.jpg"));
+            Gl.ReloadFunctions();
 
             simpleOpenGlControl1_Resize(null, null); // trigger initialization
+
+            Bitmap[] bmps = {
+                new Bitmap(@"d:\test2.jpg"),
+                new Bitmap(@"d:\test5.png"),
+                // new Bitmap(@"d:\test4.png")
+                createLabel()
+            };
+
+            textures = OpenGL.makeGroupTextures(bmps);
 
         }
 
@@ -151,11 +158,11 @@ namespace LayoutEditor
 
             OpenGL.drawTestTriangle(500, 500, 600, 500, 600, 600);
 
-            OpenGL.drawTexture(texID1, 150, 150, 256, 256, 1f);
+            OpenGL.drawTexture(textures[0], 150, 150, 256, 256, 1f);
+            OpenGL.drawTexture(textures[1], 800, 200, 256, 256, 1f);
+            OpenGL.drawTexture(textures[2], 500, 500, 256, 256, 1f);
 
-            OpenGL.drawTexture(texID1, 800, 200, 256, 256, 1f);
-
-            this.Text = "" + texID1 + "," + texID2;
+            // this.Text = String.Format("{0} , {1} , {2}", textures[0], textures[1], textures[2]);
 
             OpenGL.flush();
 
