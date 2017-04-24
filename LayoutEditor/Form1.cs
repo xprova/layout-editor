@@ -44,11 +44,14 @@ namespace LayoutEditor
                 old_ticks[i] = 0;
             }
 
+            label1.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+
             this.Size = new Size(1300, 1000);
 
             this.CenterToScreen();
 
             this.Refresh();
+
         }
 
         private Bitmap createLabel() {
@@ -166,6 +169,10 @@ namespace LayoutEditor
 
             OpenGL.flush();
 
+            label1.Text = String.Format("({0}, {1})", shift.X, shift.Y);
+
+            label1.Left = this.Width - label1.Width- 25;
+
         }
 
         private void simpleOpenGlControl1_MouseMove(object sender, MouseEventArgs e) {
@@ -213,5 +220,6 @@ namespace LayoutEditor
 
             OpenGL.init(w, h);
         }
-    }
+
+            }
 }
