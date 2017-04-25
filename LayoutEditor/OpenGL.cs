@@ -7,6 +7,7 @@ using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Collections;
+using System.Windows.Forms;
 
 namespace LayoutEditor
 {
@@ -21,15 +22,13 @@ namespace LayoutEditor
 
         private static Dictionary<string, SizeF> texture_sizes = new Dictionary<string, SizeF>();
 
-        public static Bitmap createLabelBmp(String str, Font font) {
+        public static Bitmap createLabelBmp(String str, Font font, bool draw_border) {
 
             Size size = dummy_graphics.MeasureString(str, font).ToSize();
 
-            // TODO: (ugly hack here) find out why MeasureString isn't behaving correctly
+            Bitmap bmp = new Bitmap(size.Width, size.Height);
 
-            Bitmap bmp = new Bitmap((int)(size.Width * 1.0f), size.Height);
-
-            RectangleF rectf = new RectangleF(0, 0, (int)(size.Width * 1.0f), size.Height);
+            RectangleF rectf = new RectangleF(0, 0, (int)(size.Width * 1.5f), size.Height);
 
             Graphics g = Graphics.FromImage(bmp);
 
@@ -37,9 +36,10 @@ namespace LayoutEditor
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-
             g.DrawString(str, font, Brushes.Black, rectf);
-            g.DrawRectangle(Pens.Black, 0, 0, size.Width, size.Height);
+
+            if (draw_border)
+                g.DrawRectangle(Pens.Black, 0, 0, size.Width, size.Height);
 
             g.Flush();
 

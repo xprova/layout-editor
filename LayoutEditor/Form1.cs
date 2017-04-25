@@ -31,19 +31,11 @@ namespace LayoutEditor
 
         private Pen module_border = new Pen(Color.Black, 2);
 
-        private Font module_font = new Font(FontFamily.GenericSansSerif, 24);
-
-        private long[] old_ticks = new long[10];
-
-        private int[] textures;
+        private Font module_font = new Font("Consolas", 16, FontStyle.Regular);
 
         public Form1() {
 
             InitializeComponent();
-
-            for (int i = 0; i < 10; i++) {
-                old_ticks[i] = 0;
-            }
 
             label1.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
 
@@ -66,13 +58,15 @@ namespace LayoutEditor
             Bitmap[] bmps = {
                 new Bitmap(@"d:\test2.jpg"),
                 new Bitmap(@"d:\test5.png"),
-                OpenGL.createLabelBmp("comp1", module_font)
+                OpenGL.createLabelBmp("module1", module_font, false),
+                OpenGL.createLabelBmp("module2", module_font, false)
             };
 
             string[] str_ids = {
                 "img1",
                 "img2",
-                "mod"
+                "module1",
+                "module2"
             };
 
             OpenGL.uploadTextures(str_ids, bmps);
@@ -87,7 +81,6 @@ namespace LayoutEditor
             OpenGL.translate(shift_x, shift_y);
 
             drawModule_GL(200, 200, 200, 200, "module1");
-            OpenGL.drawTexture("mod", 200, 200, 1f);
 
             drawModule_GL(500, 600, 200, 300, "module2");
 
@@ -103,9 +96,8 @@ namespace LayoutEditor
 
             OpenGL.drawRectangle(x, y, w, h, module_border);
 
-            //SizeF ms = g.MeasureString(name, module_font);
+            OpenGL.drawTexture(name, cx, cy - (h/2) - 25, 1f);
 
-            //g.DrawString(name, module_font, Brushes.Black, cx - ms.Width * 0.5f, cy - ms.Height * 0.5f);
         }
 
         private void drawGrid_GL(float spacing, Pen p, PointF shift) {
@@ -154,7 +146,7 @@ namespace LayoutEditor
 
             OpenGL.drawTexture("img1", 150, 150, 1f);
             OpenGL.drawTexture("img2", 800, 200, 1f);
-            OpenGL.drawTexture("mod", 500, 200, 1f);
+            //OpenGL.drawTexture("mod", 500, 200, 1f);
 
             OpenGL.flush();
 
