@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -54,23 +55,6 @@ namespace LayoutEditor
 
         }
 
-        private Bitmap createLabel() {
-            Bitmap bmp = new Bitmap(256, 256);
-
-            RectangleF rectf = new RectangleF(0, 0, 256, 256);
-
-            Graphics g = Graphics.FromImage(bmp);
-
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
-            g.DrawString("Component 1", new Font("Consolas",20), Brushes.Black, rectf);
-
-            g.Flush();
-            return bmp;
-        }
-
         private void Form1_Load(object sender, EventArgs e) {
 
             simpleOpenGlControl1.InitializeContexts();
@@ -82,11 +66,16 @@ namespace LayoutEditor
             Bitmap[] bmps = {
                 new Bitmap(@"d:\test2.jpg"),
                 new Bitmap(@"d:\test5.png"),
-                // new Bitmap(@"d:\test4.png")
-                createLabel()
+                OpenGL.createLabelBmp("comp1", module_font)
             };
 
-            textures = OpenGL.makeGroupTextures(bmps);
+            string[] str_ids = {
+                "img1",
+                "img2",
+                "mod"
+            };
+
+            OpenGL.uploadTextures(str_ids, bmps);
 
         }
 
@@ -98,6 +87,8 @@ namespace LayoutEditor
             OpenGL.translate(shift_x, shift_y);
 
             drawModule_GL(200, 200, 200, 200, "module1");
+            OpenGL.drawTexture("mod", 200, 200, 1f);
+
             drawModule_GL(500, 600, 200, 300, "module2");
 
             OpenGL.translate(-shift_x, -shift_y);
@@ -161,11 +152,9 @@ namespace LayoutEditor
 
             OpenGL.drawTestTriangle(500, 500, 600, 500, 600, 600);
 
-            OpenGL.drawTexture(textures[0], 150, 150, 256, 256, 1f);
-            OpenGL.drawTexture(textures[1], 800, 200, 256, 256, 1f);
-            OpenGL.drawTexture(textures[2], 500, 500, 256, 256, 1f);
-
-            // this.Text = String.Format("{0} , {1} , {2}", textures[0], textures[1], textures[2]);
+            OpenGL.drawTexture("img1", 150, 150, 1f);
+            OpenGL.drawTexture("img2", 800, 200, 1f);
+            OpenGL.drawTexture("mod", 500, 200, 1f);
 
             OpenGL.flush();
 

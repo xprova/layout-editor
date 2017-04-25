@@ -1,23 +1,76 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using Tao.OpenGl;
 using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Collections;
 
 namespace LayoutEditor
 {
     public class OpenGL
     {
 
+        private static Bitmap dummy_bmp = new Bitmap(1, 1);
+
+        private static Graphics dummy_graphics = Graphics.FromImage(dummy_bmp);
+
+        private static Dictionary<string, int> texture_ids = new Dictionary<string, int>();
+
+        private static Dictionary<string, SizeF> texture_sizes = new Dictionary<string, SizeF>();
+
+        public static Bitmap createLabelBmp(String str, Font font) {
+
+            Size size = dummy_graphics.MeasureString(str, font).ToSize();
+
+            // TODO: (ugly hack here) find out why MeasureString isn't behaving correctly
+
+            Bitmap bmp = new Bitmap((int)(size.Width * 1.0f), size.Height);
+
+            RectangleF rectf = new RectangleF(0, 0, (int)(size.Width * 1.0f), size.Height);
+
+            Graphics g = Graphics.FromImage(bmp);
+
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+
+            g.DrawString(str, font, Brushes.Black, rectf);
+            g.DrawRectangle(Pens.Black, 0, 0, size.Width, size.Height);
+
+            g.Flush();
+
+            return bmp;
+
+        }
+
+        public static void uploadTextures(string[] str_ids, Bitmap[] bmps) {
+
+            int n = bmps.Length;
+
+            var int_ids = makeGroupTextures(bmps);
+
+            foreach (int i in Enumerable.Range(0, n)) {
+
+                texture_ids.Add(str_ids[i], int_ids[i]);
+
+                int w = bmps[i].Size.Width;
+                int h = bmps[i].Size.Height;
+
+                texture_sizes.Add(str_ids[i], new Size(w, h));
+            }
+
+        }
+
         private static void setColor(Color c) {
 
             Gl.glColor3f(c.R / 255f, c.G / 255f, c.B / 255f);
         }
 
-        public static int[] makeGroupTextures(Bitmap[] bmps) {
+        private static int[] makeGroupTextures(Bitmap[] bmps) {
 
             int n = bmps.Length;
 
@@ -45,19 +98,33 @@ namespace LayoutEditor
 
         }
 
-        public static void drawTexture(int index, float x, float y, float w, float h, float alpha) {
+        public static void drawTexture(String str_id, float cx, float cy, float alpha) {
+
+            int int_id;
+
+            texture_ids.TryGetValue(str_id, out int_id);
 
             Gl.glEnable(Gl.GL_TEXTURE_2D);
-            Gl.glBindTexture(Gl.GL_TEXTURE_2D, index);
+            Gl.glBindTexture(Gl.GL_TEXTURE_2D, int_id);
 
             Gl.glColor4f(1, 1, 1, alpha);
 
             Gl.glBegin(Gl.GL_POLYGON);
 
+            SizeF sz;
+
+            texture_sizes.TryGetValue(str_id, out sz);
+
+            float w = sz.Width;
+            float h = sz.Height;
+
+            float x = cx - (int) (w * 0.5f);
+            float y = cy - (int) (h * 0.5f);
+
             Gl.glTexCoord2f(0, 1); Gl.glVertex2f(x, y);
-            Gl.glTexCoord2f(0, 0); Gl.glVertex2f(x, y+h);
-            Gl.glTexCoord2f(1, 0); Gl.glVertex2f(x+w, y+h);
-            Gl.glTexCoord2f(1, 1); Gl.glVertex2f(x+w, y);
+            Gl.glTexCoord2f(0, 0); Gl.glVertex2f(x, y + h);
+            Gl.glTexCoord2f(1, 0); Gl.glVertex2f(x + w, y + h);
+            Gl.glTexCoord2f(1, 1); Gl.glVertex2f(x + w, y);
 
             Gl.glEnd();
 
