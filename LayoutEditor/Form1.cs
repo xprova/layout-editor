@@ -11,25 +11,13 @@ namespace LayoutEditor
     public partial class Form1 : Form
     {
 
-        private Pen grid_major_pen = new Pen(Color.FromArgb(255, 220, 220, 220), 1);
-
-        private Pen grid_minor_pen = new Pen(Color.FromArgb(255, 230, 230, 230), 1);
-
-        private Color bg = Color.FromArgb(240, 240, 240);
-
-        private Color module_fill = Color.White;
-
-        private PointF shift = new PointF(0, 0);
-
         private Boolean is_dragging = false;
 
         private PointF drag_start = new PointF();
 
-        private PointF shift_at_drag_start = new PointF();
+        private PointF vCenter0 = new PointF(); // vCentre at the beginning of a drag operation
 
         private Font footer_font = new Font(FontFamily.GenericSansSerif, 10);
-
-        private Pen module_border = new Pen(Color.Black, 2);
 
         private Font module_font = new Font("Consolas", 16, FontStyle.Regular);
 
@@ -39,11 +27,31 @@ namespace LayoutEditor
 
             label1.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
 
+            simpleOpenGlControl1.MouseWheel += SimpleOpenGlControl1_MouseWheel;
+
             this.Size = new Size(1300, 1000);
 
             this.CenterToScreen();
 
             this.Refresh();
+
+        }
+
+        private void SimpleOpenGlControl1_MouseWheel(object sender, MouseEventArgs e) {
+
+            float factor = 1.1f;
+
+            float ac_factor = e.Delta > 0 ? factor : 1/factor;
+
+            OpenGL.zoom(ac_factor);
+
+            float cx = simpleOpenGlControl1.Width * 0.5f;
+            float cy = simpleOpenGlControl1.Height * 0.5f;
+
+            //shift.X += cx * (1 - ac_factor);
+            //shift.Y += cy * (1 - ac_factor);
+
+            simpleOpenGlControl1.Invalidate();
 
         }
 
@@ -73,84 +81,16 @@ namespace LayoutEditor
 
         }
 
-        private void drawObjects_GL(PointF shift) {
-
-            int shift_x = (int)shift.X;
-            int shift_y = (int)shift.Y;
-
-            OpenGL.translate(shift_x, shift_y);
-
-            drawModule_GL(200, 200, 200, 200, "module1");
-
-            drawModule_GL(500, 600, 200, 300, "module2");
-
-            OpenGL.translate(-shift_x, -shift_y);
-        }
-
-        private void drawModule_GL(float cx, float cy, float w, float h, String name) {
-
-            float x = cx - w * 0.5f;
-            float y = cy - h * 0.5f;
-
-            OpenGL.fillRectangle(x, y, w, h, module_fill);
-
-            OpenGL.drawRectangle(x, y, w, h, module_border);
-
-            OpenGL.drawTexture(name, cx, cy - (h/2) - 25, 1f);
-
-        }
-
-        private void drawGrid_GL(float spacing, Pen p, PointF shift) {
+        private void simpleOpenGlControl1_Paint(object sender, PaintEventArgs e) {
 
             float w = simpleOpenGlControl1.Width;
             float h = simpleOpenGlControl1.Height;
 
-            int grid_xlines_count = (int)(w / spacing) + 1;
-            int grid_ylines_count = (int)(h / spacing) + 1;
+            Renderer.render(w, h);
 
-            float shift_x = shift.X % spacing;
-            float shift_y = shift.Y % spacing;
+            PointF vCentre = Renderer.getCentre();
 
-            OpenGL.translate(shift_x, shift_y);
-
-            foreach (float ind in Enumerable.Range(0, grid_xlines_count + 1)) {
-
-                float x = ind * spacing;
-
-                OpenGL.drawLine(x, -spacing, x, h + spacing, p);
-
-            }
-
-            foreach (float ind in Enumerable.Range(0, grid_ylines_count + 1)) {
-
-                float y = ind * spacing;
-
-                OpenGL.drawLine(-spacing, y, w + spacing, y, p);
-            }
-
-            OpenGL.translate(-shift_x, -shift_y);
-
-        }
-
-        private void simpleOpenGlControl1_Paint(object sender, PaintEventArgs e) {
-
-            OpenGL.clear(bg);
-
-            drawGrid_GL(25, grid_minor_pen, shift);
-
-            drawGrid_GL(100, grid_major_pen, shift);
-
-            drawObjects_GL(shift);
-
-            OpenGL.drawTestTriangle(500, 500, 600, 500, 600, 600);
-
-            OpenGL.drawTexture("img1", 150, 150, 1f);
-            OpenGL.drawTexture("img2", 800, 200, 1f);
-            //OpenGL.drawTexture("mod", 500, 200, 1f);
-
-            OpenGL.flush();
-
-            label1.Text = String.Format("({0}, {1})", shift.X, shift.Y);
+            label1.Text = String.Format("({0}, {1})", vCentre.X, vCentre.Y);
 
             label1.Left = this.Width - label1.Width- 25;
 
@@ -158,26 +98,35 @@ namespace LayoutEditor
 
         private void simpleOpenGlControl1_MouseMove(object sender, MouseEventArgs e) {
 
+            // mouse coordinates (relative)
+
+            float mx = e.X;
+            float my = -e.Y;
+
             if (e.Button == MouseButtons.Middle) {
 
                 if (is_dragging) {
 
-                    float dx = e.X - drag_start.X;
-                    float dy = e.Y - drag_start.Y;
+                    float dx = mx - drag_start.X;
+                    float dy = my - drag_start.Y;
 
-                    shift.X = shift_at_drag_start.X + dx;
-                    shift.Y = shift_at_drag_start.Y - dy;
+                    float x = vCenter0.X + dx;
+                    float y = vCenter0.Y + dy;
+
+                    Renderer.changeView(x, y);
 
                     simpleOpenGlControl1.Invalidate();
 
                 } else {
 
                     is_dragging = true;
-                    drag_start.X = e.X;
-                    drag_start.Y = e.Y;
+                    drag_start.X = mx;
+                    drag_start.Y = my;
 
-                    shift_at_drag_start.X = shift.X;
-                    shift_at_drag_start.Y = shift.Y;
+                    PointF vCentre = Renderer.getCentre();
+
+                    vCenter0.X = vCentre.X;
+                    vCenter0.Y = vCentre.Y;
 
                     simpleOpenGlControl1.Cursor = Cursors.SizeAll;
                 }

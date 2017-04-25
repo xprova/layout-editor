@@ -13,7 +13,6 @@ namespace LayoutEditor
 {
     public class OpenGL
     {
-
         private static Bitmap dummy_bmp = new Bitmap(1, 1);
 
         private static Graphics dummy_graphics = Graphics.FromImage(dummy_bmp);
@@ -21,6 +20,10 @@ namespace LayoutEditor
         private static Dictionary<string, int> texture_ids = new Dictionary<string, int>();
 
         private static Dictionary<string, SizeF> texture_sizes = new Dictionary<string, SizeF>();
+
+        private static int width, height;
+
+        private static float scale;
 
         public static Bitmap createLabelBmp(String str, Font font, bool draw_border) {
 
@@ -131,10 +134,12 @@ namespace LayoutEditor
             Gl.glDisable(Gl.GL_TEXTURE_2D);
         }
 
-        public static void drawLine(float x1, float y1, float x2, float y2, Pen p) {
+        public static void drawLine(float x1, float y1, float x2, float y2, Pen p, bool scaleBorder) {
+
+            float border_width = p.Width * (scaleBorder ? OpenGL.scale : 1);
 
             setColor(p.Color);
-            Gl.glLineWidth(p.Width);
+            Gl.glLineWidth(border_width);
             Gl.glBegin(Gl.GL_LINES);
             Gl.glVertex2f(x1, y1);
             Gl.glVertex2f(x2, y2);
@@ -143,10 +148,10 @@ namespace LayoutEditor
 
         public static void drawRectangle(float x, float y, float w, float h, Pen p) {
 
-            OpenGL.drawLine(x, y, x + w, y, p);
-            OpenGL.drawLine(x, y + h, x + w, y + h, p);
-            OpenGL.drawLine(x, y, x, y + h, p);
-            OpenGL.drawLine(x + w, y, x + w, y + h, p);
+            OpenGL.drawLine(x, y, x + w, y, p, true);
+            OpenGL.drawLine(x, y + h, x + w, y + h, p, true);
+            OpenGL.drawLine(x, y, x, y + h, p, true);
+            OpenGL.drawLine(x + w, y, x + w, y + h, p, true);
         }
 
         public static void fillRectangle(float x, float y, float w, float h, Color c) {
@@ -175,6 +180,21 @@ namespace LayoutEditor
             Gl.glOrtho(0, width, 0, height, -1, 1);
             Gl.glEnable(Gl.GL_BLEND);
             Gl.glBlendFunc(Gl.GL_SRC_ALPHA, Gl.GL_ONE_MINUS_SRC_ALPHA);
+
+            OpenGL.width = width;
+            OpenGL.height = height;
+            OpenGL.scale = 1;
+
+        }
+
+        public static void zoom(float factor) {
+
+            scale *= factor;
+
+            int new_width = (int)(width * scale);
+            int new_height = (int)(height * scale);
+
+            Gl.glViewport(0, 0, new_width, new_height);
 
         }
 
