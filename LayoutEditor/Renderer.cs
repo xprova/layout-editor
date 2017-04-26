@@ -45,13 +45,13 @@ namespace LayoutEditor
 
         }
 
-        public static void drawGrid_GL(float spacing, Pen p, float w, float h) {
+        public static void drawGrid(float spacing, Pen p, float w, float h) {
 
             int grid_xlines_count = (int)(w / spacing) + 1;
             int grid_ylines_count = (int)(h / spacing) + 1;
 
-            float shift_x = vCentre.X % spacing;
-            float shift_y = vCentre.Y % spacing;
+            float shift_x = (-vCentre.X + w * 0.5f) % spacing;
+            float shift_y = (-vCentre.Y + h * 0.5f) % spacing;
 
             OpenGL.translate(shift_x, shift_y);
 
@@ -74,25 +74,42 @@ namespace LayoutEditor
 
         }
 
+        private static float crop(float v, float min, float max) {
+
+            v = v > min ? v : min;
+            v = v < max ? v : max;
+
+            return v;
+
+        }
+
         public static void changeView(float cx, float cy) {
 
-        	vCentre.X = cx;
-        	vCentre.Y = cy;
+            float b = 500;
+
+            cx = crop(cx, -b, b);
+            cy = crop(cy, -b, b);
+
+            vCentre.X = cx;
+            vCentre.Y = cy;
 
         }
 
-        public static void drawObjects_GL() {
+        public static void drawObjects(float w, float h) {
 
-            OpenGL.translate(vCentre.X, vCentre.Y);
+            float dx = -vCentre.X + w * 0.5f;
+            float dy = -vCentre.Y + h * 0.5f;
 
-            drawModule_GL(200, 200, 200, 200, "module1");
+            OpenGL.translate(dx, dy);
 
-            drawModule_GL(500, 600, 200, 300, "module2");
+            drawModule(0, 0, 200, 200, "module1");
 
-            OpenGL.translate(-vCentre.X, -vCentre.Y);
+            drawModule(500, 600, 200, 300, "module2");
+
+            OpenGL.translate(-dx, -dy);
         }
 
-        private static void drawModule_GL(float cx, float cy, float w, float h, String name) {
+        private static void drawModule(float cx, float cy, float w, float h, String name) {
 
             float x = cx - w * 0.5f;
             float y = cy - h * 0.5f;
@@ -107,26 +124,26 @@ namespace LayoutEditor
 
         public static PointF getCentre() {
 
-        	return new PointF(vCentre.X, vCentre.Y);
+            return new PointF(vCentre.X, vCentre.Y);
         }
 
         public static void render(float w, float h) {
 
-        	OpenGL.clear(bg);
+            OpenGL.clear(bg);
 
-        	drawGrid_GL(25, grid_minor_pen, w, h);
+            drawGrid(25, grid_minor_pen, w, h);
 
-        	drawGrid_GL(100, grid_major_pen, w, h);
+            drawGrid(100, grid_major_pen, w, h);
 
-        	drawObjects_GL();
+            drawObjects(w, h);
 
-        	// OpenGL.drawTestTriangle(500, 500, 600, 500, 600, 600);
+            // OpenGL.drawTestTriangle(500, 500, 600, 500, 600, 600);
 
-        	// OpenGL.drawTexture("img1", 150, 150, 1f);
-        	// OpenGL.drawTexture("img2", 800, 200, 1f);
-        	//OpenGL.drawTexture("mod", 500, 200, 1f);
+            // OpenGL.drawTexture("img1", 150, 150, 1f);
+            // OpenGL.drawTexture("img2", 800, 200, 1f);
+            //OpenGL.drawTexture("mod", 500, 200, 1f);
 
-        	OpenGL.flush();
+            OpenGL.flush();
         }
 
     }

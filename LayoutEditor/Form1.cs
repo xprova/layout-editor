@@ -100,8 +100,8 @@ namespace LayoutEditor
 
             // mouse coordinates (relative)
 
-            float mx = e.X;
-            float my = -e.Y;
+            float mx = -e.X;
+            float my = e.Y;
 
             if (e.Button == MouseButtons.Middle) {
 
@@ -114,6 +114,25 @@ namespace LayoutEditor
                     float y = vCenter0.Y + dy;
 
                     Renderer.changeView(x, y);
+
+                    // Now we do the same calculations in reverse to calculate
+                    // drag_start coordinates. Normally (if changeView changed
+                    // the view coordinates to x,y), the re-calculated values
+                    // of drag_start will be the same. However, if changeView
+                    // did not (say because it capped x or y at a limit) then
+                    // the new anchor point will be calculated at this limit
+                    // as opposed to beyond it. The upshot is that if dragging
+                    // was bounded in any direction then moving the cursor in
+                    // the opposite direction will drag in the opposite
+                    // direction *immediately*.
+
+                    PointF vCentre = Renderer.getCentre();
+
+                    dx = vCentre.X - vCenter0.X;
+                    dy = vCentre.Y - vCenter0.Y;
+
+                    drag_start.X = mx - dx;
+                    drag_start.Y = my - dy;
 
                     simpleOpenGlControl1.Invalidate();
 
