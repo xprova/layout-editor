@@ -5,9 +5,6 @@ using Tao.OpenGl;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Collections;
-using System.Windows.Forms;
 
 namespace LayoutEditor
 {
@@ -166,6 +163,13 @@ namespace LayoutEditor
             Gl.glTranslatef(x, y, 0);
         }
 
+        public static void setScale(float s) {
+
+            Gl.glScalef(s, s, 1);
+
+            scale = s;
+        }
+
         public static void clear(Color c) {
 
             Gl.glClearColor(c.R / 255f, c.G / 255f, c.B / 255f, 0f);
@@ -184,17 +188,6 @@ namespace LayoutEditor
             OpenGL.width = width;
             OpenGL.height = height;
             OpenGL.scale = 1;
-
-        }
-
-        public static void zoom(float factor) {
-
-            scale *= factor;
-
-            int new_width = (int)(width * scale);
-            int new_height = (int)(height * scale);
-
-            Gl.glViewport(0, 0, new_width, new_height);
 
         }
 

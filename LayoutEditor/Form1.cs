@@ -10,7 +10,6 @@ namespace LayoutEditor
 {
     public partial class Form1 : Form
     {
-
         private Boolean is_dragging = false;
 
         private PointF drag_start = new PointF();
@@ -39,17 +38,7 @@ namespace LayoutEditor
 
         private void SimpleOpenGlControl1_MouseWheel(object sender, MouseEventArgs e) {
 
-            float factor = 1.1f;
-
-            float ac_factor = e.Delta > 0 ? factor : 1/factor;
-
-            OpenGL.zoom(ac_factor);
-
-            float cx = simpleOpenGlControl1.Width * 0.5f;
-            float cy = simpleOpenGlControl1.Height * 0.5f;
-
-            //shift.X += cx * (1 - ac_factor);
-            //shift.Y += cy * (1 - ac_factor);
+            Renderer.zoom(Math.Sign(e.Delta));
 
             simpleOpenGlControl1.Invalidate();
 
@@ -90,7 +79,12 @@ namespace LayoutEditor
 
             PointF vCentre = Renderer.getCentre();
 
-            label1.Text = String.Format("({0}, {1})", vCentre.X, vCentre.Y);
+            double x = Math.Round(vCentre.X);
+            double y = Math.Round(vCentre.Y);
+
+            double z = Math.Round(Renderer.getScale() * 100);
+
+            label1.Text = String.Format("({0}, {1}) at {2}%", x, y, z);
 
             label1.Left = this.Width - label1.Width- 25;
 
@@ -100,8 +94,8 @@ namespace LayoutEditor
 
             // mouse coordinates (relative)
 
-            float mx = -e.X;
-            float my = e.Y;
+            float mx = -e.X / Renderer.getScale();
+            float my = e.Y / Renderer.getScale();
 
             if (e.Button == MouseButtons.Middle) {
 

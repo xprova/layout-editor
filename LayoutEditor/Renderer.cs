@@ -20,7 +20,7 @@ namespace LayoutEditor
 
         private static PointF vCentre; // view centre
 
-        private static float scale = 1; // zoom factor
+        private static int zoom_level = 0;
 
         // styles
 
@@ -42,24 +42,27 @@ namespace LayoutEditor
             float ch = canvas_size.Height;
 
             canvas = new RectangleF(0, 0, cw, ch);
-
         }
 
         public static void drawGrid(float spacing, Pen p, float w, float h) {
 
-            int grid_xlines_count = (int)(w / spacing) + 1;
-            int grid_ylines_count = (int)(h / spacing) + 1;
+            float scale = getScale();
 
-            float shift_x = (-vCentre.X + w * 0.5f) % spacing;
-            float shift_y = (-vCentre.Y + h * 0.5f) % spacing;
+            int grid_xlines_count = (int)(w / scale / spacing) + 1;
+            int grid_ylines_count = (int)(h / scale / spacing) + 1;
+
+            float shift_x = (-vCentre.X * scale + w * 0.5f) % (spacing * scale);
+            float shift_y = (-vCentre.Y * scale + h * 0.5f) % (spacing * scale);
 
             OpenGL.translate(shift_x, shift_y);
+
+            OpenGL.setScale(scale);
 
             foreach (float ind in Enumerable.Range(0, grid_xlines_count + 1)) {
 
                 float x = ind * spacing;
 
-                OpenGL.drawLine(x, -spacing, x, h + spacing, p, false);
+                OpenGL.drawLine(x, -spacing, x, h / scale + spacing, p, false);
 
             }
 
@@ -67,20 +70,20 @@ namespace LayoutEditor
 
                 float y = ind * spacing;
 
-                OpenGL.drawLine(-spacing, y, w + spacing, y, p, false);
+                OpenGL.drawLine(-spacing, y, w / scale + spacing, y, p, false);
             }
 
-            OpenGL.translate(-shift_x, -shift_y);
+            OpenGL.setScale(1/scale);
 
+            OpenGL.translate(-shift_x, -shift_y);
         }
 
-        private static float crop(float v, float min, float max) {
+        private static T crop<T>(T v, T min, T max) where T : System.IComparable {
 
-            v = v > min ? v : min;
-            v = v < max ? v : max;
+            v = v.CompareTo(min) > 0 ? v : min;
+            v = v.CompareTo(max) < 0 ? v : max;
 
             return v;
-
         }
 
         public static void changeView(float cx, float cy) {
@@ -92,21 +95,47 @@ namespace LayoutEditor
 
             vCentre.X = cx;
             vCentre.Y = cy;
-
         }
 
         public static void drawObjects(float w, float h) {
 
-            float dx = -vCentre.X + w * 0.5f;
-            float dy = -vCentre.Y + h * 0.5f;
+            float scale = getScale();
 
-            OpenGL.translate(dx, dy);
+            float shift_x = -vCentre.X * scale + w * 0.5f;
+            float shift_y = -vCentre.Y * scale + h * 0.5f;
+
+            OpenGL.translate(shift_x, shift_y);
+
+            OpenGL.setScale(scale);
 
             drawModule(0, 0, 200, 200, "module1");
 
             drawModule(500, 600, 200, 300, "module2");
 
-            OpenGL.translate(-dx, -dy);
+            //OpenGL.drawTestTriangle(300, 300, 400, 300, 400, 400);
+
+            OpenGL.drawTexture("img1", 150, 150, 1f);
+            OpenGL.drawTexture("img2", 800, 200, 1f);
+
+            OpenGL.setScale(1 / scale);
+
+            OpenGL.translate(-shift_x, -shift_y);
+        }
+
+        public static void zoom(int direction) {
+
+            zoom_level += direction;
+
+            zoom_level = crop(zoom_level, -3, 3);
+        }
+
+        public static float getScale() {
+
+            // returns drawing scale (ratio of screen unit to view port unit)
+
+            float factor = 1.2f;
+
+            return (float) Math.Pow(factor, zoom_level);
         }
 
         private static void drawModule(float cx, float cy, float w, float h, String name) {
@@ -119,7 +148,6 @@ namespace LayoutEditor
             OpenGL.drawRectangle(x, y, w, h, module_border);
 
             OpenGL.drawTexture(name, cx, cy - (h/2) - 25, 1f);
-
         }
 
         public static PointF getCentre() {
@@ -137,14 +165,7 @@ namespace LayoutEditor
 
             drawObjects(w, h);
 
-            // OpenGL.drawTestTriangle(500, 500, 600, 500, 600, 600);
-
-            // OpenGL.drawTexture("img1", 150, 150, 1f);
-            // OpenGL.drawTexture("img2", 800, 200, 1f);
-            //OpenGL.drawTexture("mod", 500, 200, 1f);
-
             OpenGL.flush();
         }
-
     }
 }
