@@ -1,0 +1,10 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+			"folder_exclude_patterns": ["bin", "obj", ".vs", "Properties"],
+			"file_include_patterns": ["*.cs", ".gitignore", "*.sublime-project"]
+		}
+	]
+}
