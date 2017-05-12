@@ -16,10 +16,6 @@ namespace LayoutEditor
 
         private PointF vCenter0 = new PointF(); // vCentre at the beginning of a drag operation
 
-        private Font footer_font = new Font(FontFamily.GenericSansSerif, 10);
-
-        private Font module_font = new Font("Consolas", 16, FontStyle.Regular);
-
         public Form1() {
 
             InitializeComponent();
@@ -27,8 +23,6 @@ namespace LayoutEditor
             label1.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
 
             simpleOpenGlControl1.MouseWheel += SimpleOpenGlControl1_MouseWheel;
-
-            this.Size = new Size(1300, 1000);
 
             this.CenterToScreen();
 
@@ -52,21 +46,7 @@ namespace LayoutEditor
 
             simpleOpenGlControl1_Resize(null, null); // trigger initialization
 
-            Bitmap[] bmps = {
-                new Bitmap(@"d:\test2.jpg"),
-                new Bitmap(@"d:\test5.png"),
-                OpenGL.createLabelBmp("module1", module_font, false),
-                OpenGL.createLabelBmp("module2", module_font, false)
-            };
-
-            string[] str_ids = {
-                "img1",
-                "img2",
-                "module1",
-                "module2"
-            };
-
-            OpenGL.uploadTextures(str_ids, bmps);
+            Renderer.prepareTextures();
 
         }
 
@@ -97,7 +77,7 @@ namespace LayoutEditor
             float mx = -e.X / Renderer.getScale();
             float my = e.Y / Renderer.getScale();
 
-            if (e.Button == MouseButtons.Middle) {
+            if (e.Button == MouseButtons.Left) {
 
                 if (is_dragging) {
 
@@ -161,7 +141,7 @@ namespace LayoutEditor
 
             int h = simpleOpenGlControl1.Height;
 
-            OpenGL.init(w, h);
+            Renderer.init(w, h);
         }
 
     }

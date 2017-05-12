@@ -28,6 +28,8 @@ namespace LayoutEditor
 
         private static Color module_fill = Color.White;
 
+        private static Font module_font = new Font("Consolas", 16, FontStyle.Regular);
+
         private static Pen grid_major_pen = new Pen(Color.FromArgb(255, 220, 220, 220), 1);
 
         private static Pen grid_minor_pen = new Pen(Color.FromArgb(255, 230, 230, 230), 1);
@@ -166,6 +168,29 @@ namespace LayoutEditor
             drawObjects(w, h);
 
             OpenGL.flush();
+        }
+
+        public static void init(int w, int h) {
+
+            OpenGL.init(w, h);
+        }
+
+        public static void prepareTextures() {
+            Bitmap[] bmps = {
+                new Bitmap(@"d:\test2.jpg"),
+                new Bitmap(@"d:\test5.png"),
+                OpenGL.createLabelBmp("module1", module_font, false),
+                OpenGL.createLabelBmp("module2", module_font, false)
+            };
+
+            string[] str_ids = {
+                "img1",
+                "img2",
+                "module1",
+                "module2"
+            };
+
+            OpenGL.uploadTextures(str_ids, bmps);
         }
     }
 }
