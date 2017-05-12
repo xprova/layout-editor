@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Windows.Forms;
 using Tao.OpenGl;
 
@@ -49,6 +46,8 @@ namespace LayoutEditor
             Renderer.modules.Add(new Module(0, 0, 200, 200, "module1"));
 
             Renderer.modules.Add(new Module(500, 600, 200, 300, "module2"));
+
+            Renderer.modules.Add(new Module(-200, 600, 200, 300, "norGate1"));
 
             Renderer.init();
 

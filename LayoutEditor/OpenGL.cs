@@ -47,20 +47,20 @@ namespace LayoutEditor
 
         }
 
-        public static void uploadTextures(string[] str_ids, Bitmap[] bmps) {
+        public static void uploadTextures(List<String> ids, List<Bitmap> bmps) {
 
-            int n = bmps.Length;
+            int n = bmps.Count;
 
             var int_ids = makeGroupTextures(bmps);
 
             foreach (int i in Enumerable.Range(0, n)) {
 
-                texture_ids.Add(str_ids[i], int_ids[i]);
+                texture_ids.Add(ids[i], int_ids[i]);
 
                 int w = bmps[i].Size.Width;
                 int h = bmps[i].Size.Height;
 
-                texture_sizes.Add(str_ids[i], new Size(w, h));
+                texture_sizes.Add(ids[i], new Size(w, h));
             }
 
         }
@@ -70,9 +70,9 @@ namespace LayoutEditor
             Gl.glColor3f(c.R / 255f, c.G / 255f, c.B / 255f);
         }
 
-        private static int[] makeGroupTextures(Bitmap[] bmps) {
+        private static int[] makeGroupTextures(List<Bitmap> bmps) {
 
-            int n = bmps.Length;
+            int n = bmps.Count;
 
             int[] indices = new int[n];
 

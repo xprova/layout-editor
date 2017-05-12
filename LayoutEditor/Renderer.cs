@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,7 @@ namespace LayoutEditor
 
         private static Dictionary<String, Bitmap> bitmaps = new Dictionary<string, Bitmap>();
 
-        public static HashSet<Module> modules = new HashSet<Module>();
+        public static List<Module> modules = new List<Module>();
 
         // body
 
@@ -186,21 +187,29 @@ namespace LayoutEditor
 
         public static void prepareTextures() {
 
-            Bitmap[] bmps = {
-                new Bitmap(@"d:\test2.jpg"),
-                new Bitmap(@"d:\test5.png"),
-                OpenGL.createLabelBmp("module1", module_font, false),
-                OpenGL.createLabelBmp("module2", module_font, false)
-            };
+            List<Bitmap> bmps = new List<Bitmap>();
 
-            string[] str_ids = {
-                "img1",
-                "img2",
-                "module1",
-                "module2"
-            };
+            List<string> ids = new List<string>();
 
-            OpenGL.uploadTextures(str_ids, bmps);
+            bmps.Add(new Bitmap(@"d:\test2.jpg"));
+            bmps.Add(new Bitmap(@"d:\test5.png"));
+
+            ids.Add("img1");
+            ids.Add("img2");
+
+            int n = modules.Count;
+
+            foreach (int i in Enumerable.Range(0, n)) {
+
+                String str = modules[i].name;
+
+                bmps.Add(OpenGL.createLabelBmp(str, module_font, false));
+
+                ids.Add(str);
+
+            }
+
+            OpenGL.uploadTextures(ids, bmps);
         }
     }
 }
