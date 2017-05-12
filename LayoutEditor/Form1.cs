@@ -46,7 +46,11 @@ namespace LayoutEditor
 
             simpleOpenGlControl1_Resize(null, null); // trigger initialization
 
-            Renderer.prepareTextures();
+            Renderer.modules.Add(new Module(0, 0, 200, 200, "module1"));
+
+            Renderer.modules.Add(new Module(500, 600, 200, 300, "module2"));
+
+            Renderer.init();
 
         }
 
@@ -141,7 +145,7 @@ namespace LayoutEditor
 
             int h = simpleOpenGlControl1.Height;
 
-            Renderer.init(w, h);
+            Renderer.resize(w, h);
         }
 
     }

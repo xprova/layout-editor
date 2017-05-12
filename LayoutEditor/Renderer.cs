@@ -36,6 +36,10 @@ namespace LayoutEditor
 
         private static Color bg = Color.FromArgb(240, 240, 240);
 
+        private static Dictionary<String, Bitmap> bitmaps = new Dictionary<string, Bitmap>();
+
+        public static HashSet<Module> modules = new HashSet<Module>();
+
         // body
 
         private static void init(SizeF canvas_size) {
@@ -110,9 +114,8 @@ namespace LayoutEditor
 
             OpenGL.setScale(scale);
 
-            drawModule(0, 0, 200, 200, "module1");
-
-            drawModule(500, 600, 200, 300, "module2");
+            foreach (Module mod in modules)
+                drawModule(mod.cx, mod.cy, mod.width, mod.height, mod.name);
 
             //OpenGL.drawTestTriangle(300, 300, 400, 300, 400, 400);
 
@@ -129,6 +132,7 @@ namespace LayoutEditor
             zoom_level += direction;
 
             zoom_level = crop(zoom_level, -3, 3);
+
         }
 
         public static float getScale() {
@@ -170,12 +174,18 @@ namespace LayoutEditor
             OpenGL.flush();
         }
 
-        public static void init(int w, int h) {
+        public static void resize(int w, int h) {
 
             OpenGL.init(w, h);
         }
 
+        public static void init() {
+
+            prepareTextures();
+        }
+
         public static void prepareTextures() {
+
             Bitmap[] bmps = {
                 new Bitmap(@"d:\test2.jpg"),
                 new Bitmap(@"d:\test5.png"),
