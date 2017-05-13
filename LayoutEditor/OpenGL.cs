@@ -22,7 +22,9 @@ namespace LayoutEditor
 
         private static float scale;
 
-        public static Bitmap createLabelBmp(String str, Font font, bool draw_border) {
+        public static Bitmap createLabelBmp(String str, Font font0, bool draw_border, float scale) {
+
+            Font font = new Font(font0.FontFamily, font0.Size * (float) Math.Pow(scale,1));
 
             Size size = dummy_graphics.MeasureString(str, font).ToSize();
 
@@ -36,7 +38,10 @@ namespace LayoutEditor
             g.InterpolationMode = InterpolationMode.HighQualityBicubic;
             g.PixelOffsetMode = PixelOffsetMode.HighQuality;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
+
             g.DrawString(str, font, Brushes.Black, rectf);
+
+            draw_border = true;
 
             if (draw_border)
                 g.DrawRectangle(Pens.Black, 0, 0, size.Width, size.Height);
@@ -90,7 +95,7 @@ namespace LayoutEditor
                 Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MIN_FILTER, Gl.GL_LINEAR);
                 Gl.glTexParameteri(Gl.GL_TEXTURE_2D, Gl.GL_TEXTURE_MAG_FILTER, Gl.GL_LINEAR);
 
-                Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, (int)Gl.GL_RGBA, bmp.Width, bmp.Height, 0, Gl.GL_BGRA, Gl.GL_UNSIGNED_BYTE, bmpData.Scan0);
+                Gl.glTexImage2D(Gl.GL_TEXTURE_2D, 0, (int)Gl.GL_RGBA, bmp.Width*1, bmp.Height*1, 0, Gl.GL_BGRA, Gl.GL_UNSIGNED_BYTE, bmpData.Scan0);
 
             }
 

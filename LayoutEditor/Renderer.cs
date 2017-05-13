@@ -130,9 +130,9 @@ namespace LayoutEditor
 
         public static void zoom(int direction) {
 
-            zoom_level += direction;
+            zoom_level = crop(zoom_level + direction, -3, 3);
 
-            zoom_level = crop(zoom_level, -3, 3);
+            prepareTextures();
 
         }
 
@@ -178,11 +178,17 @@ namespace LayoutEditor
         public static void resize(int w, int h) {
 
             OpenGL.init(w, h);
+
         }
 
         public static void init() {
 
             prepareTextures();
+        }
+
+        public static Bitmap testBmp() {
+            string str = "module1";
+            return OpenGL.createLabelBmp(str, module_font, false, getScale());
         }
 
         public static void prepareTextures() {
@@ -203,7 +209,7 @@ namespace LayoutEditor
 
                 String str = modules[i].name;
 
-                bmps.Add(OpenGL.createLabelBmp(str, module_font, false));
+                bmps.Add(OpenGL.createLabelBmp(str, module_font, false, getScale()));
 
                 ids.Add(str);
 

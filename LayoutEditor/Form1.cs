@@ -21,13 +21,17 @@ namespace LayoutEditor
 
             simpleOpenGlControl1.MouseWheel += SimpleOpenGlControl1_MouseWheel;
 
-            this.CenterToScreen();
+            CenterToScreen();
 
-            this.Refresh();
+            Refresh();
+
+            pictureBox1.BackgroundImage = Renderer.testBmp();
 
         }
 
         private void SimpleOpenGlControl1_MouseWheel(object sender, MouseEventArgs e) {
+
+            simpleOpenGlControl1.Invalidate();
 
             Renderer.zoom(Math.Sign(e.Delta));
 
