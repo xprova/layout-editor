@@ -22,9 +22,9 @@ namespace LayoutEditor
 
         private static float scale;
 
-        public static Bitmap createLabelBmp(String str, Font font0, bool draw_border, float scale) {
+        public static Bitmap createLabelBmp(String str, Font font0, bool draw_border, float scale, float FontScaler) {
 
-            Font font = new Font(font0.FontFamily, font0.Size * (float) Math.Pow(scale,1));
+            Font font = new Font(font0.FontFamily, font0.Size * scale * FontScaler);
 
             Size size = dummy_graphics.MeasureString(str, font).ToSize();
 
@@ -62,10 +62,10 @@ namespace LayoutEditor
 
                 texture_ids.Add(ids[i], int_ids[i]);
 
-                int w = bmps[i].Size.Width;
-                int h = bmps[i].Size.Height;
+                float w = bmps[i].Size.Width;
+                float h = bmps[i].Size.Height;
 
-                texture_sizes.Add(ids[i], new Size(w, h));
+                texture_sizes.Add(ids[i], new SizeF(w, h));
             }
 
         }
@@ -103,7 +103,7 @@ namespace LayoutEditor
 
         }
 
-        public static void drawTexture(String str_id, float cx, float cy, float alpha) {
+        public static void drawTexture(String str_id, float cx, float cy, float alpha, float scale) {
 
             int int_id;
 
@@ -120,8 +120,8 @@ namespace LayoutEditor
 
             texture_sizes.TryGetValue(str_id, out sz);
 
-            float w = sz.Width;
-            float h = sz.Height;
+            float w = sz.Width * scale;
+            float h = sz.Height * scale;
 
             float x = cx - (int) (w * 0.5f);
             float y = cy - (int) (h * 0.5f);

@@ -23,6 +23,8 @@ namespace LayoutEditor
 
         private static int zoom_level = 0;
 
+        private static float FontScaler = 2;
+
         // styles
 
         private static Pen module_border = new Pen(Color.Black, 2);
@@ -120,8 +122,8 @@ namespace LayoutEditor
 
             //OpenGL.drawTestTriangle(300, 300, 400, 300, 400, 400);
 
-            OpenGL.drawTexture("img1", 150, 150, 1f);
-            OpenGL.drawTexture("img2", 800, 200, 1f);
+            OpenGL.drawTexture("img1", 150, 150, 1f, 1);
+            OpenGL.drawTexture("img2", 800, 200, 1f, 1);
 
             OpenGL.setScale(1 / scale);
 
@@ -154,7 +156,7 @@ namespace LayoutEditor
 
             OpenGL.drawRectangle(x, y, w, h, module_border);
 
-            OpenGL.drawTexture(name, cx, cy - (h/2) - 25, 1f);
+            OpenGL.drawTexture(name, cx, cy - (h/2) - 25, 1f, 0.5f);
         }
 
         public static PointF getCentre() {
@@ -188,7 +190,7 @@ namespace LayoutEditor
 
         public static Bitmap testBmp() {
             string str = "module1";
-            return OpenGL.createLabelBmp(str, module_font, false, getScale());
+            return OpenGL.createLabelBmp(str, module_font, false, getScale(), FontScaler);
         }
 
         public static void prepareTextures() {
@@ -209,7 +211,7 @@ namespace LayoutEditor
 
                 String str = modules[i].name;
 
-                bmps.Add(OpenGL.createLabelBmp(str, module_font, false, getScale()));
+                bmps.Add(OpenGL.createLabelBmp(str, module_font, false, getScale(), FontScaler));
 
                 ids.Add(str);
 
