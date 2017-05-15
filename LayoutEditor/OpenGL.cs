@@ -58,6 +58,10 @@ namespace LayoutEditor
 
             var int_ids = makeGroupTextures(bmps);
 
+            texture_ids.Clear();
+
+            texture_sizes.Clear();
+
             foreach (int i in Enumerable.Range(0, n)) {
 
                 texture_ids.Add(ids[i], int_ids[i]);
