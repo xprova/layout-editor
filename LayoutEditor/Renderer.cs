@@ -23,15 +23,13 @@ namespace LayoutEditor
 
         private static int zoom_level = 0;
 
-        private static float FontScaler = 2;
-
         // styles
 
         private static Pen module_border = new Pen(Color.Black, 2);
 
         private static Color module_fill = Color.White;
 
-        private static Font module_font = new Font("Consolas", 16, FontStyle.Regular);
+        private static Font module_font = new Font("Courier", 16, FontStyle.Regular);
 
         private static Pen grid_major_pen = new Pen(Color.FromArgb(255, 220, 220, 220), 1);
 
@@ -156,7 +154,7 @@ namespace LayoutEditor
 
             OpenGL.drawRectangle(x, y, w, h, module_border);
 
-            OpenGL.drawTexture(name, cx, cy - (h/2) - 25, 1f, 0.5f);
+            OpenGL.drawTexture(name, cx, cy - (h/2) - 25, 1f, 1/getScale());
         }
 
         public static PointF getCentre() {
@@ -190,7 +188,7 @@ namespace LayoutEditor
 
         public static Bitmap testBmp() {
             string str = "module1";
-            return OpenGL.createLabelBmp(str, module_font, false, getScale(), FontScaler);
+            return OpenGL.createLabelBmp(str, module_font, false, getScale());
         }
 
         public static void prepareTextures() {
@@ -211,7 +209,7 @@ namespace LayoutEditor
 
                 String str = modules[i].name;
 
-                bmps.Add(OpenGL.createLabelBmp(str, module_font, false, getScale(), FontScaler));
+                bmps.Add(OpenGL.createLabelBmp(str, module_font, false, getScale()));
 
                 ids.Add(str);
 

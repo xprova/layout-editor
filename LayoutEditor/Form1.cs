@@ -37,6 +37,10 @@ namespace LayoutEditor
 
             simpleOpenGlControl1.Invalidate();
 
+            pictureBox1.BackgroundImage = Renderer.testBmp();
+
+            pictureBox1.Invalidate();
+
         }
 
         private void Form1_Load(object sender, EventArgs e) {
@@ -84,7 +88,7 @@ namespace LayoutEditor
             float mx = -e.X / Renderer.getScale();
             float my = e.Y / Renderer.getScale();
 
-            if (e.Button == MouseButtons.Left) {
+            if (e.Button == MouseButtons.Middle) {
 
                 if (is_dragging) {
 
@@ -149,6 +153,7 @@ namespace LayoutEditor
             int h = simpleOpenGlControl1.Height;
 
             Renderer.resize(w, h);
+
         }
 
     }
