@@ -22,9 +22,38 @@ namespace LayoutEditor
 
         private static float scale;
 
+        public static Bitmap ResizeImage(Image image, int width, int height) {
+
+            // Source:
+            // http://stackoverflow.com/questions/1922040/resize-an-image-c-sharp
+
+            var destRect = new Rectangle(0, 0, width, height);
+            var destImage = new Bitmap(width, height);
+
+            destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+            using (var graphics = Graphics.FromImage(destImage)) {
+
+                graphics.CompositingMode = CompositingMode.SourceCopy;
+                graphics.CompositingQuality = CompositingQuality.HighQuality;
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.HighQuality;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                using (var wrapMode = new ImageAttributes()) {
+                    wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                    graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+                }
+            }
+
+            return destImage;
+        }
+
         public static Bitmap createLabelBmp(String str, Font font0, bool draw_border, float scale) {
 
-            Font font = new Font(font0.FontFamily, font0.Size * scale);
+            float bs = 16f; // oversampling factor
+
+            Font font = new Font(font0.FontFamily, font0.Size * scale * bs);
 
             Size size = dummy_graphics.MeasureString(str, font).ToSize();
 
@@ -46,7 +75,7 @@ namespace LayoutEditor
 
             g.Flush();
 
-            return bmp;
+            return ResizeImage(bmp, (int) (bmp.Width/ bs), (int) (bmp.Height / bs));
 
         }
 
