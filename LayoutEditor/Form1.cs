@@ -156,5 +156,18 @@ namespace LayoutEditor
 
         }
 
+        private void simpleOpenGlControl1_KeyPress(object sender, KeyPressEventArgs e) {
+
+            if (e.KeyChar == 'p') {
+
+                pictureBox1.Visible = !pictureBox1.Visible;
+
+            } else if (e.KeyChar == 'c') {
+
+                Renderer.changeView(0, 0);
+
+                simpleOpenGlControl1.Invalidate();
+            }
+        }
     }
 }

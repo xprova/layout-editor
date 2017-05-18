@@ -51,6 +51,7 @@ namespace LayoutEditor
             this.simpleOpenGlControl1.StencilBits = ((byte)(0));
             this.simpleOpenGlControl1.TabIndex = 1;
             this.simpleOpenGlControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.simpleOpenGlControl1_Paint);
+            this.simpleOpenGlControl1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.simpleOpenGlControl1_KeyPress);
             this.simpleOpenGlControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.simpleOpenGlControl1_MouseMove);
             this.simpleOpenGlControl1.Resize += new System.EventHandler(this.simpleOpenGlControl1_Resize);
             // 
@@ -73,6 +74,7 @@ namespace LayoutEditor
             this.pictureBox1.Size = new System.Drawing.Size(316, 199);
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.Visible = false;
             // 
             // Form1
             // 
